@@ -30,7 +30,7 @@
     $scope.ttl = '--:--:--';
     $scope.connected = false;
     $scope.type = {windows: false};
-    $scope.isInstanceBeingCreated = false;
+    $scope.isInstanceBeingCreated = true;
     $scope.newInstanceBtnText = '+ Add new instance';
     $scope.deleteInstanceBtnText = 'Delete';
     $scope.isInstanceBeingDeleted = false;
@@ -172,9 +172,8 @@
 
         if (response.data.created_at) {
           $scope.expiresAt = moment(response.data.expires_at);
-          var now  = "04/09/2025 15:00:00";
           setInterval(function() {
-            $scope.ttl = moment.utc(moment(now,"DD/MM/YYYY HH:mm:ss").diff(moment())).format('HH:mm:ss');
+            $scope.ttl = moment.utc($scope.expiresAt.diff(moment())).format('HH:mm:ss');
             $scope.$apply();
           }, 1000);
         }
@@ -280,13 +279,13 @@
           }
         });
 
-        socket.on('session end', function() {
-          $scope.showAlert('Session timed out!', 'Your session has expired and all of your instances have been deleted.', '#sessionEnd', function() {
-            window.location.href = '/';
-          });
-          $scope.isAlive = false;
-          socket.close();
-        });
+        // socket.on('session end', function() {
+        //   $scope.showAlert('Session timed out!', 'Your session has expired and all of your instances have been deleted.', '#sessionEnd', function() {
+        //     window.location.href = '/';
+        //   });
+        //   $scope.isAlive = true;
+        //   socket.close();
+        // });
 
         socket.on('instance new', function(name, ip, hostname, proxyHost) {
           var instance = $scope.upsertInstance({ name: name, ip: ip, hostname: hostname, proxy_host: proxyHost, session_id: $scope.sessionId});
